@@ -256,7 +256,8 @@ public class Program
         //⬆️⬆️⬆️
 
 
-        Console.Write("二次确认请输入'y':");
+        Console.Write("二次确认,请输入'y':");
+        Console.WriteLine();
         string? userInput = Console.ReadLine();
 
         if (string.IsNullOrEmpty(userInput))
@@ -265,7 +266,7 @@ public class Program
             return false;
         }
 
-        char userInput_LowVersion = Convert.ToChar(userInput);
+        char userInput_LowVersion = Convert.ToChar(userInput.ToLower()[0]);
         if (userInput_LowVersion == 'y')
         {
             return true;
