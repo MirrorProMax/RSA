@@ -45,11 +45,11 @@ public class Program
         Console.WriteLine();
         Console.WriteLine($"请选择:");
         Console.WriteLine("1. 为我方创建新的'公钥'和'私钥'");
-        Console.WriteLine("2. 通过'对方公钥'加密'我方原文'");
-        Console.WriteLine("3. 通过'我方私钥'解密'对方密文'");
+        Console.WriteLine("2. 通过'对方公钥'和'我方原文'生成'我方密文'");
+        Console.WriteLine("3. 通过'我方私钥'和'对方密文'生成'对方原文'");
         Console.WriteLine("4. 调试: 为对方创建新的'公钥'和'私钥'");
-        Console.WriteLine("5. 调试: 对方通过'我方公钥'加密'对方原文'");
-        Console.WriteLine("6. 调试: 对方通过'对方私钥'解密'我方密文'");
+        Console.WriteLine("5. 调试: 对方通过'我方公钥'和'对方原文'生成'对方密文'");
+        Console.WriteLine("6. 调试: 对方通过'对方私钥'和'我方密文'生成'我方原文'");
         string? input = Console.ReadLine();
         int number;
         // 尝试将用户输入转换为数字  
@@ -68,12 +68,15 @@ public class Program
                     解密文件(我方私钥路径, 对方密文路径, 对方原文路径);
                     break;
                 case 4:
+                    //调试,模拟对方操作
                     创建公钥和私钥(对方公钥路径, 对方私钥路径_调试);
                     break;
                 case 5:
+                    //调试,模拟对方操作
                     加密文件(我方公钥路径, 对方原文路径_调试, 对方密文路径);
                     break;
                 case 6:
+                    //调试,模拟对方操作
                     解密文件(对方私钥路径_调试, 我方密文路径, 我方原文路径_调试);
                     break;
             }
@@ -254,8 +257,16 @@ public class Program
 
 
         Console.Write("二次确认请输入'y':");
-        char userInput = Convert.ToChar(Console.ReadLine().ToLower());
-        if (userInput == 'y')
+        string? userInput = Console.ReadLine();
+
+        if (string.IsNullOrEmpty(userInput))
+        {
+            // 如果输入为空,你可以选择抛出一个异常或者返回一个默认值  
+            return false;
+        }
+
+        char userInput_LowVersion = Convert.ToChar(userInput);
+        if (userInput_LowVersion == 'y')
         {
             return true;
         }
