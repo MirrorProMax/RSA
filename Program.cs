@@ -29,6 +29,7 @@ public class Program
 
         //
 
+
         string 我方公钥_路径 = 文件夹路径[文件夹类型.公有] + "/我方公钥.xml";
         string 我方私钥_路径 = 文件夹路径[文件夹类型.私有_我方] + "/我方私钥.xml";
 
@@ -42,6 +43,10 @@ public class Program
         string 对方密文_路径 = 文件夹路径[文件夹类型.公有] + "/对方密文.txt";
         string 对方原文_解密后_路径 = 文件夹路径[文件夹类型.私有_我方] + "/对方原文_解密后.txt";
         string 对方原文_加密前_路径_调试 = 文件夹路径[文件夹类型.私有_对方_调试] + "/对方原文_加密前_调试.txt";
+
+        //
+
+        int 密钥长度 = 2048;
 
         //
 
@@ -75,18 +80,18 @@ public class Program
                     创建公钥和私钥(对方公钥_路径, 对方私钥_路径_调试);
                     break;
                 case 3:
-                    加密文件(对方公钥_路径, 我方原文_路径, 我方密文_路径);
+                    加密文件(密钥长度, 对方公钥_路径, 我方原文_路径, 我方密文_路径);
                     break;
                 case 4:
                     //调试,模拟对方操作
-                    解密文件(对方私钥_路径_调试, 我方密文_路径, 我方原文_解密后_路径_调试);
+                    解密文件(密钥长度, 对方私钥_路径_调试, 我方密文_路径, 我方原文_解密后_路径_调试);
                     break;
                 case 5:
                     //调试,模拟对方操作
-                    加密文件(我方公钥_路径, 对方原文_加密前_路径_调试, 对方密文_路径);
+                    加密文件(密钥长度, 我方公钥_路径, 对方原文_加密前_路径_调试, 对方密文_路径);
                     break;
                 case 6:
-                    解密文件(我方私钥_路径, 对方密文_路径, 对方原文_解密后_路径);
+                    解密文件(密钥长度, 我方私钥_路径, 对方密文_路径, 对方原文_解密后_路径);
                     break;
             }
         }
@@ -130,7 +135,7 @@ public class Program
     }
 
 
-    public static void 创建公钥和私钥_批量(string[] in公钥的路径组, string[] in私钥的路径组)
+    public static void 创建公钥和私钥_批量(int in密钥长度, string[] in公钥的路径组, string[] in私钥的路径组)
     {
         if (!控制台二次确认())
         {
@@ -140,18 +145,18 @@ public class Program
         Console.WriteLine();
         Console.WriteLine($"RSA: 创建公钥和私钥 开始");
 
-        using (var rsa = new RSACryptoServiceProvider(2048)) // 2048位密钥长度    
+        using (var rsa = new RSACryptoServiceProvider(in密钥长度)) // 2048位密钥长度    
         {
             // 生成密钥对    
             rsa.PersistKeyInCsp = false; // 不要在内存中保存密钥    
             string 私钥 = rsa.ToXmlString(true); // 包含私钥的XML字符串
             string 公钥 = rsa.ToXmlString(false); // 不包含私钥的XML字符串
 
-            // 将公钥写入公共密钥文件    
+            // 将公钥写入公共密钥文件
             // File.WriteAllText(in公钥的路径, 公钥);
             写入文本_多路径(in公钥的路径组, 公钥);
 
-            // 将私钥写入私有密钥文件    
+            // 将私钥写入私有密钥文件
             // File.WriteAllText(in私钥的路径组, 私钥);
             写入文本_多路径(in私钥的路径组, 私钥);
         }
@@ -161,18 +166,18 @@ public class Program
     }
 
 
-    public static void 加密文件(string in公钥的路径, string in原文的路径, string out文件的路径)
+    public static void 加密文件(int in密钥长度, string in公钥路径, string in原文路径, string in密文路径)
     {
         Console.WriteLine();
         Console.WriteLine($"RSA: 加密 开始");
-        using (var rsa = new RSACryptoServiceProvider(2048)) // 2048位密钥长度    
+        using (var rsa = new RSACryptoServiceProvider(in密钥长度))
         {
             // 读取输入文件内容    
-            string 原文 = File.ReadAllText(in原文的路径);
+            string 原文 = File.ReadAllText(in原文路径);
             Console.WriteLine($"原文: {原文}");
 
             //读取公钥
-            string 公钥 = File.ReadAllText(in公钥的路径);
+            string 公钥 = File.ReadAllText(in公钥路径);
 
             // 从XML文件中加载公钥    
             rsa.FromXmlString(公钥);
@@ -185,20 +190,21 @@ public class Program
             Console.WriteLine($"密文: {加密后的内容_字符串}");
 
             // 将加密后的字符串写入输出文件    
-            File.WriteAllText(out文件的路径, 加密后的内容_字符串);
+            File.WriteAllText(in密文路径, 加密后的内容_字符串);
         }
         Console.WriteLine($"RSA: 加密 完成");
         Console.WriteLine();
     }
 
-    public static void 解密文件(string in私钥的路径, string in文件的路径, string out文件的路径)
+
+    public static void 解密文件(int in密钥长度, string in私钥的路径, string in密文路径, string in原文路径)
     {
         Console.WriteLine();
         Console.WriteLine($"RSA: 解密 开始");
-        using (var rsa = new RSACryptoServiceProvider(2048)) // 2048位密钥长度  
+        using (var rsa = new RSACryptoServiceProvider(in密钥长度))
         {
             // 读取输入文件内容  
-            string 密文 = File.ReadAllText(in文件的路径);
+            string 密文 = File.ReadAllText(in密文路径);
             Console.WriteLine($"密文: {密文}");
 
             //读取私钥
@@ -218,7 +224,7 @@ public class Program
             Console.WriteLine($"原文: {原文}");
 
             // 将解密后的内容写入输出文件  
-            File.WriteAllText(out文件的路径, 原文);
+            File.WriteAllText(in原文路径, 原文);
         }
         Console.WriteLine($"RSA: 解密 完成");
         Console.WriteLine();
