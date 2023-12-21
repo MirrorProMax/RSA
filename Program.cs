@@ -3,6 +3,11 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
+public enum 文件夹类型
+{
+    公有, 私有_我方, 私有_对方_调试
+}
+
 
 public class Program
 {
@@ -12,47 +17,48 @@ public class Program
 
         //
 
-        string 公有文件夹_路径 = 根目录 + "/公有";
-        string 私有文件夹_我方_路径 = 根目录 + "/私有_我方";
-        string 私有文件夹_对方_路径_调试 = 根目录 + "/私有_对方_调试";
-
-        string[] 文件夹组 = { 公有文件夹_路径, 私有文件夹_我方_路径, 私有文件夹_对方_路径_调试 };
+        Dictionary<文件夹类型, string> 文件夹路径 = new()
+        {
+            { 文件夹类型.公有,根目录 + "/公有"},
+            { 文件夹类型.私有_我方,根目录 + "/私有_我方"},
+            { 文件夹类型.私有_对方_调试,根目录 + "/私有_对方_调试"},
+        };
 
         //
 
-        string 我方公钥_路径 = 公有文件夹_路径 + "/我方公钥.xml";
-        string 我方私钥_路径 = 私有文件夹_我方_路径 + "/我方私钥.xml";
+        string 我方公钥_路径 = 文件夹路径[文件夹类型.公有] + "/我方公钥.xml";
+        string 我方私钥_路径 = 文件夹路径[文件夹类型.私有_我方] + "/我方私钥.xml";
 
-        string 对方公钥_路径 = 公有文件夹_路径 + "/对方公钥.xml";
-        string 对方私钥_路径_调试 = 私有文件夹_对方_路径_调试 + "/对方私钥_调试.xml";
+        string 对方公钥_路径 = 文件夹路径[文件夹类型.公有] + "/对方公钥.xml";
+        string 对方私钥_路径_调试 = 文件夹路径[文件夹类型.私有_对方_调试] + "/对方私钥_调试.xml";
 
-        string 我方原文_路径 = 私有文件夹_我方_路径 + "/我方原文_加密前.txt";
-        string 我方密文_路径 = 公有文件夹_路径 + "/我方密文.txt";
+        string 我方原文_路径 = 文件夹路径[文件夹类型.私有_我方] + "/我方原文_加密前.txt";
+        string 我方密文_路径 = 文件夹路径[文件夹类型.公有] + "/我方密文.txt";
+        string 我方原文_解密后_路径_调试 = 文件夹路径[文件夹类型.私有_对方_调试] + "/我方原文_解密后_调试.txt";
 
-        string 对方密文_路径 = 公有文件夹_路径 + "/对方密文.txt";
-        string 对方原文_解密后_路径 = 私有文件夹_我方_路径 + "/对方原文_解密后.txt";
-
-        string 对方原文_加密前_路径_调试 = 私有文件夹_对方_路径_调试 + "/对方原文_加密前_调试.txt";
-        string 我方原文_解密后_路径_调试 = 私有文件夹_对方_路径_调试 + "/我方原文_解密后_调试.txt";
+        string 对方密文_路径 = 文件夹路径[文件夹类型.公有] + "/对方密文.txt";
+        string 对方原文_解密后_路径 = 文件夹路径[文件夹类型.私有_我方] + "/对方原文_解密后.txt";
+        string 对方原文_加密前_路径_调试 = 文件夹路径[文件夹类型.私有_对方_调试] + "/对方原文_加密前_调试.txt";
 
         //
 
         Console.WriteLine();
-        Console.WriteLine($"RSA: 开始");
+        Console.WriteLine($"Program: 开始");
+        Console.WriteLine();
 
-        确保文件夹存在(文件夹组);
+        确保文件夹(文件夹路径);
 
         Console.WriteLine();
         Console.WriteLine($"请选择:");
-        Console.WriteLine("1. 为我方创建新的'公钥'和'私钥'");
-        Console.WriteLine("2. 通过'对方公钥'和'我方原文'生成'我方密文'");
-        Console.WriteLine("3. 通过'我方私钥'和'对方密文'生成'对方原文'");
-        Console.WriteLine("4. 调试: 为对方创建新的'公钥'和'私钥'");
-        Console.WriteLine("5. 调试: 对方通过'我方公钥'和'对方原文'生成'对方密文'");
-        Console.WriteLine("6. 调试: 对方通过'对方私钥'和'我方密文'生成'我方原文'");
+        Console.WriteLine("1. 为我方创建新的'公钥'和'私钥'.");
+        Console.WriteLine("2. (调试) 为对方创建新的'公钥'和'私钥'.");
+        Console.WriteLine("3. 通过'对方公钥'和'我方原文(加密前)', 生成'我方密文'.");
+        Console.WriteLine("4. (调试) 对方通过'对方私钥'和'我方密文', 生成'我方原文(解密后)'.");
+        Console.WriteLine("5. (调试) 对方通过'我方公钥'和'对方原文(加密前)', 生成'对方密文'.");
+        Console.WriteLine("6. 通过'我方私钥'和'对方密文', 生成'对方原文(解密后)'.");
         string? input = Console.ReadLine();
         int number;
-        // 尝试将用户输入转换为数字  
+        // 尝试将用户输入转换为数字
         if (int.TryParse(input, out number) && number >= 1 && number <= 6)
         {
             // 根据数字调用不同的方法  
@@ -62,32 +68,32 @@ public class Program
                     创建公钥和私钥(我方公钥_路径, 我方私钥_路径);
                     break;
                 case 2:
-                    加密文件(对方公钥_路径, 我方原文_路径, 我方密文_路径);
+                    //调试,模拟对方操作
+                    创建公钥和私钥(对方公钥_路径, 对方私钥_路径_调试);
                     break;
                 case 3:
-                    解密文件(我方私钥_路径, 对方密文_路径, 对方原文_解密后_路径);
+                    加密文件(对方公钥_路径, 我方原文_路径, 我方密文_路径);
                     break;
                 case 4:
                     //调试,模拟对方操作
-                    创建公钥和私钥(对方公钥_路径, 对方私钥_路径_调试);
+                    解密文件(对方私钥_路径_调试, 我方密文_路径, 我方原文_解密后_路径_调试);
                     break;
                 case 5:
                     //调试,模拟对方操作
                     加密文件(我方公钥_路径, 对方原文_加密前_路径_调试, 对方密文_路径);
                     break;
                 case 6:
-                    //调试,模拟对方操作
-                    解密文件(对方私钥_路径_调试, 我方密文_路径, 我方原文_解密后_路径_调试);
+                    解密文件(我方私钥_路径, 对方密文_路径, 对方原文_解密后_路径);
                     break;
             }
         }
         else
         {
-            Console.WriteLine("输入无效.");
+            Console.WriteLine("Program: 输入无效.");
         }
 
         Console.WriteLine();
-        Console.WriteLine($"RSA: 结束");
+        Console.WriteLine($"Program: 结束");
     }
 
 
@@ -216,23 +222,25 @@ public class Program
     }
 
 
-    public static void 确保文件夹存在(string[] inStringArray)
+    public static void 确保文件夹(Dictionary<文件夹类型, string> in文件夹组)
     {
+        Console.WriteLine($"确保文件夹: 开始");
 
         // 循环检查每个文件夹是否已存在,如果不存在则创建  
-        foreach (string folder in inStringArray)
+        foreach (var folder in in文件夹组)
         {
             // 如果文件夹不存在,则创建它  
-            if (!Directory.Exists(folder))
+            if (!Directory.Exists(folder.Value))
             {
-                Directory.CreateDirectory(folder);
-                Console.WriteLine($"创建了文件夹: {folder}");
+                Directory.CreateDirectory(folder.Value);
+                Console.WriteLine($"创建了文件夹: {folder.Key}");
             }
             else
             {
-                Console.WriteLine($"文件夹已存在: {folder}");
+                Console.WriteLine($"文件夹已存在: {folder.Key}");
             }
         }
+        Console.WriteLine($"确保文件夹: 完成");
     }
 
 
