@@ -272,7 +272,7 @@ public class Program
         //⬆️⬆️⬆️
 
 
-        Console.Write("二次确认,请输入'y':");
+        Console.Write("二次确认,请输入Y:");
         Console.WriteLine();
         string? userInput = Console.ReadLine();
 
