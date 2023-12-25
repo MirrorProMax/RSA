@@ -245,7 +245,7 @@ public class Program
             }
             else
             {
-                Console.WriteLine($"文件夹已存在: {folder.Key}");
+                Console.WriteLine($"已确认存在文件夹: {folder.Key}");
             }
         }
         Console.WriteLine($"确保文件夹: 完成");
