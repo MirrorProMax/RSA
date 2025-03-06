@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "NtOkYdsO5l9LsRvqyz1DAHAjHPMjIJp1eqNm7O+tUn9jFCyMxFeqv3CkYsJ18t3t8737UIkD4pEJVruBjrmcVA==",
+  "dgSpecHash": "8UpXbdU3zig=",
   "success": true,
-  "projectFilePath": "/Users/tanqingwen/Desktop/RSA/RSA.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "/Users/tanqingwen/RSA/RSA.csproj",
+  "expectedPackageFiles": [
+    "/Users/tanqingwen/.nuget/packages/microsoft.netcore.app.ref/7.0.20/microsoft.netcore.app.ref.7.0.20.nupkg.sha512",
+    "/Users/tanqingwen/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.20/microsoft.aspnetcore.app.ref.7.0.20.nupkg.sha512",
+    "/Users/tanqingwen/.nuget/packages/microsoft.netcore.app.host.osx-arm64/7.0.20/microsoft.netcore.app.host.osx-arm64.7.0.20.nupkg.sha512"
+  ],
   "logs": []
 }
