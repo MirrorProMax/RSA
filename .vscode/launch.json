@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "coreclr",
+            "request": "launch",
+            "name": "Launch Program",
+            "program": "${workspaceFolder}/bin/Debug/net9.0/RSA.dll",
+            "preLaunchTask": "build"
+        }
+    ]
+}
